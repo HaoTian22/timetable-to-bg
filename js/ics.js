@@ -47,7 +47,7 @@ var ics = function(uidDomain, prodId) {
      * @param  {string} begin       Beginning date of event
      * @param  {string} stop        Ending date of event
      */
-    'addEvent': function(subject, description, location, begin, stop, rrule, alarmBefore) {
+    'addEvent': function(subject, description, location, begin, stop, rrule, alarmBefore, geo) {
       // I'm not in the mood to make these optional... So they are all required
       if (typeof subject === 'undefined' ||
         typeof description === 'undefined' ||
@@ -172,6 +172,19 @@ var ics = function(uidDomain, prodId) {
         }
       }
 
+      // Validate geo coordinates if provided
+      if (geo) {
+        if (typeof geo.lat !== 'number' || typeof geo.lon !== 'number') {
+          throw "Geo coordinates must be numbers";
+        }
+        if (geo.lat < -90 || geo.lat > 90) {
+          throw "Latitude must be between -90 and 90";
+        }
+        if (geo.lon < -180 || geo.lon > 180) {
+          throw "Longitude must be between -180 and 180";
+        }
+      }
+
       var stamp = new Date().toISOString();
 
       var calendarEvent = [
@@ -183,6 +196,7 @@ var ics = function(uidDomain, prodId) {
         'DTSTART;VALUE=DATE-TIME:' + start,
         'DTEND;VALUE=DATE-TIME:' + end,
         'LOCATION:' + location,
+        ...(geo ? [`GEO:${geo.lat};${geo.lon}`] : []),
         'SUMMARY;LANGUAGE=en-us:' + subject,
         'TRANSP:TRANSPARENT',
       ];
