@@ -381,7 +381,8 @@
           interval: 1,
         },
         eventAlarm, 
-        coordinates
+        coordinates, // Use WGS-84 coordinates for general compatibility
+        coordinates ? coordinates.gcj02 : null //For Apple devices, use GCJ-02 coordinates if available
       );
       }
     }
