@@ -197,7 +197,12 @@ var ics = function(uidDomain, prodId) {
         'DTEND;VALUE=DATE-TIME:' + end,
         'LOCATION:' + location,
         ...(geo ? [`GEO:${geo.lat};${geo.lon}`] : []),
-        ...(geo ? [`X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=${location};X-APPLE-RADIUS=${geo.radius || 50};X-TITLE=${location}:geo:${geo.lat},${geo.lon}`] : []),
+        ...(geo ? (function() {
+          // Use GCJ-02 coordinates for Apple devices when available, otherwise fall back to WGS-84
+          const apLat = (geo.gcj02 && geo.gcj02.lat !== null) ? geo.gcj02.lat : geo.lat;
+          const apLon = (geo.gcj02 && geo.gcj02.lon !== null) ? geo.gcj02.lon : geo.lon;
+          return [`X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=${location};X-APPLE-RADIUS=${geo.radius || 50};X-TITLE=${location}:geo:${apLat},${apLon}`];
+        })() : []),
         'SUMMARY;LANGUAGE=en-us:' + subject,
         'TRANSP:TRANSPARENT',
       ];
