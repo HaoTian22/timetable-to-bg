@@ -197,6 +197,7 @@ var ics = function(uidDomain, prodId) {
         'DTEND;VALUE=DATE-TIME:' + end,
         'LOCATION:' + location,
         ...(geo ? [`GEO:${geo.lat};${geo.lon}`] : []),
+        ...(geo ? [`X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=${location};X-APPLE-RADIUS=${geo.radius || 50};X-TITLE=${location}:geo:${geo.lat},${geo.lon}`] : []),
         'SUMMARY;LANGUAGE=en-us:' + subject,
         'TRANSP:TRANSPARENT',
       ];
