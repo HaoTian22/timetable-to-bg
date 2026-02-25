@@ -196,17 +196,23 @@ var ics = function(uidDomain, prodId) {
         'DTSTART;VALUE=DATE-TIME:' + start,
         'DTEND;VALUE=DATE-TIME:' + end,
         'LOCATION:' + location,
-        ...(geo ? [`GEO:${geo.lat};${geo.lon}`] : []),
-        ...(geo ? (function() {
-          // Use GCJ-02 coordinates for Apple devices when available, otherwise fall back to WGS-84
-          const apLat = (geo.gcj02 && geo.gcj02.lat !== null) ? geo.gcj02.lat : geo.lat;
-          const apLon = (geo.gcj02 && geo.gcj02.lon !== null) ? geo.gcj02.lon : geo.lon;
-          return [`X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=${location};X-APPLE-RADIUS=${geo.radius || 50};X-TITLE=${location}:geo:${apLat},${apLon}`];
-        })() : []),
         'SUMMARY;LANGUAGE=en-us:' + subject,
         'TRANSP:TRANSPARENT',
       ];
-      
+
+      if (geo) {
+        calendarEvent.splice(calendarEvent.indexOf('LOCATION:' + location) + 1, 0,
+          'GEO:' + geo.lat + ';' + geo.lon
+        );
+        // Use GCJ-02 coordinates for Apple devices when available, otherwise fall back to WGS-84
+        var apLat = (geo.gcj02 && geo.gcj02.lat !== null && typeof geo.gcj02.lat === 'number') ? geo.gcj02.lat : geo.lat;
+        var apLon = (geo.gcj02 && geo.gcj02.lon !== null && typeof geo.gcj02.lon === 'number') ? geo.gcj02.lon : geo.lon;
+        var apRadius = geo.radius || 50;
+        calendarEvent.splice(calendarEvent.indexOf('GEO:' + geo.lat + ';' + geo.lon) + 1, 0,
+          'X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=' + location + ';X-APPLE-RADIUS=' + apRadius + ';X-TITLE=' + location + ':geo:' + apLat + ',' + apLon
+        );
+      }
+
       // Add alarm if specified
       if (typeof alarmBefore !== 'undefined' && alarmBefore.toString().trim() !== '') {
         calendarEvent.push(

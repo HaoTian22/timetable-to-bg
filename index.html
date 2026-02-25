@@ -238,6 +238,9 @@
   // Sort entries by key length descending so longer codes (e.g. "T29") are
   // matched before shorter prefixes (e.g. "T2") that would otherwise shadow them.
   function getLocationCoordinates(locationString) {
+    if (!locationString) {
+      return null;
+    }
     const sortedEntries = Object.entries(locationCoordinates).sort((a, b) => b[0].length - a[0].length);
     for (const [code, coords] of sortedEntries) {
       if (locationString.includes(code)) {
