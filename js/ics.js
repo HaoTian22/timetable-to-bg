@@ -17,7 +17,17 @@ var ics = function(uidDomain, prodId) {
   var calendarStart = [
     'BEGIN:VCALENDAR',
     'PRODID:' + prodId,
-    'VERSION:2.0'
+    'VERSION:2.0',
+    'X-WR-TIMEZONE:Asia/Shanghai',
+    'BEGIN:VTIMEZONE',
+    'TZID:Asia/Shanghai',
+    'BEGIN:STANDARD',
+    'DTSTART:19700101T000000',
+    'TZOFFSETFROM:+0800',
+    'TZOFFSETTO:+0800',
+    'TZNAME:CST',
+    'END:STANDARD',
+    'END:VTIMEZONE'
   ].join(SEPARATOR);
   var calendarEnd = SEPARATOR + 'END:VCALENDAR';
   var BYDAY_VALUES = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
@@ -125,12 +135,12 @@ var ics = function(uidDomain, prodId) {
       var end_minutes = ("00" + (end_date.getMinutes().toString())).slice(-2);
       var end_seconds = ("00" + (end_date.getSeconds().toString())).slice(-2);
 
-      var now_year = ("0000" + (now_date.getFullYear().toString())).slice(-4);
-      var now_month = ("00" + ((now_date.getMonth() + 1).toString())).slice(-2);
-      var now_day = ("00" + ((now_date.getDate()).toString())).slice(-2);
-      var now_hours = ("00" + (now_date.getHours().toString())).slice(-2);
-      var now_minutes = ("00" + (now_date.getMinutes().toString())).slice(-2);
-      var now_seconds = ("00" + (now_date.getSeconds().toString())).slice(-2);
+      var now_year = ("0000" + (now_date.getUTCFullYear().toString())).slice(-4);
+      var now_month = ("00" + ((now_date.getUTCMonth() + 1).toString())).slice(-2);
+      var now_day = ("00" + ((now_date.getUTCDate()).toString())).slice(-2);
+      var now_hours = ("00" + (now_date.getUTCHours().toString())).slice(-2);
+      var now_minutes = ("00" + (now_date.getUTCMinutes().toString())).slice(-2);
+      var now_seconds = ("00" + (now_date.getUTCSeconds().toString())).slice(-2);
 
       // Since some calendars don't add 0 second events, we need to remove time if there is none...
       var start_time = '';
@@ -139,7 +149,7 @@ var ics = function(uidDomain, prodId) {
         start_time = 'T' + start_hours + start_minutes + start_seconds;
         end_time = 'T' + end_hours + end_minutes + end_seconds;
       }
-      var now_time = 'T' + now_hours + now_minutes + now_seconds;
+      var now_time = 'T' + now_hours + now_minutes + now_seconds + 'Z';
 
       var start = start_year + start_month + start_day + start_time;
       var end = end_year + end_month + end_day + end_time;
@@ -179,9 +189,9 @@ var ics = function(uidDomain, prodId) {
         'UID:' + calendarEvents.length + "@" + uidDomain,
         'CLASS:PUBLIC',
         'DESCRIPTION:' + description,
-        'DTSTAMP;VALUE=DATE-TIME:' + now,
-        'DTSTART;VALUE=DATE-TIME:' + start,
-        'DTEND;VALUE=DATE-TIME:' + end,
+        'DTSTAMP:' + now,
+        'DTSTART;TZID=Asia/Shanghai:' + start,
+        'DTEND;TZID=Asia/Shanghai:' + end,
         'LOCATION:' + location,
         'SUMMARY;LANGUAGE=en-us:' + subject,
         'TRANSP:TRANSPARENT',
