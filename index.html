@@ -325,7 +325,20 @@
 
     // Get semester identifier based on start date
     const semesterId = determineSemester(startDate);
-    var cal = ics(`${semesterId}.uic`)
+    var SEP = (navigator.appVersion.indexOf('Win') !== -1) ? '\r\n' : '\n';
+    var vtimezone = [
+      'X-WR-TIMEZONE:Asia/Shanghai',
+      'BEGIN:VTIMEZONE',
+      'TZID:Asia/Shanghai',
+      'BEGIN:STANDARD',
+      'DTSTART:19700101T000000',
+      'TZOFFSETFROM:+0800',
+      'TZOFFSETTO:+0800',
+      'TZNAME:CST',
+      'END:STANDARD',
+      'END:VTIMEZONE'
+    ].join(SEP);
+    var cal = ics(`${semesterId}.uic`, 'Calendar', vtimezone)
 
     for (var i = 0; i < course_ds_date.length; i++){
       for (var j = 0; j < course_ds_date[i][1].length; j++) {
