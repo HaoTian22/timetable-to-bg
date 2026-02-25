@@ -46,6 +46,9 @@ var ics = function(uidDomain, prodId) {
      * @param  {string} location    Location of event
      * @param  {string} begin       Beginning date of event
      * @param  {string} stop        Ending date of event
+     * @param  {object} rrule       Recurrence rule object (optional)
+     * @param  {number} alarmBefore Number of minutes before event to trigger alarm (optional)
+     * @param  {object} geo         Geographical coordinates object with lat and lon properties (optional)
      */
     'addEvent': function(subject, description, location, begin, stop, rrule, alarmBefore, geo) {
       // I'm not in the mood to make these optional... So they are all required
